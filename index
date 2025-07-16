@@ -1,32 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Image Smoothing Filter UI</title>
+  <title>Image Processor - Grayscale & Smoothing</title>
   <style>
     body {
       font-family: Arial;
-      padding: 20px;
+      margin: 20px;
     }
     canvas {
-      border: 1px solid #000;
+      border: 1px solid black;
+      margin-bottom: 10px;
+    }
+    #pixelInfo {
+      font-size: 14px;
       margin: 10px 0;
+      font-weight: bold;
+    }
+    button, input[type="file"] {
+      margin: 10px 0;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-<h2>Image Smoothing Filter UI</h2>
+<h2>Image Processor - Grayscale & Smoothing</h2>
 
-<input type="file" id="imageInput" accept="image/*"><br><br>
+<input type="file" id="imageInput" accept="image/*"><br>
 
 <label>
   <input type="checkbox" id="grayscaleCheckbox">
   Convert to Grayscale First
-</label><br><br>
+</label><br>
 
-<button onclick="processImage()">Smooth Image</button><br><br>
+<button onclick="processImage()">Apply Smoothing Filter</button><br>
+
+<div id="pixelInfo">Hover over the image to see pixel RGB values.</div>
 
 <h3>Original Image:</h3>
 <canvas id="originalCanvas"></canvas>
@@ -39,6 +49,7 @@
   const grayscaleCheckbox = document.getElementById('grayscaleCheckbox');
   const originalCanvas = document.getElementById('originalCanvas');
   const processedCanvas = document.getElementById('processedCanvas');
+  const pixelInfo = document.getElementById('pixelInfo');
 
   let imageDataOriginal;
 
@@ -58,6 +69,20 @@
     };
     if (file) {
       reader.readAsDataURL(file);
+    }
+  });
+
+  originalCanvas.addEventListener('mousemove', function(event) {
+    const rect = originalCanvas.getBoundingClientRect();
+    const x = Math.floor(event.clientX - rect.left);
+    const y = Math.floor(event.clientY - rect.top);
+    const ctx = originalCanvas.getContext('2d');
+
+    if (x >= 0 && y >= 0 && x < originalCanvas.width && y < originalCanvas.height) {
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      pixelInfo.textContent = X: ${x}, Y: ${y} | R: ${pixel[0]}, G: ${pixel[1]}, B: ${pixel[2]}, A: ${pixel[3]};
+    } else {
+      pixelInfo.textContent = 'Hover over the image to see pixel RGB values.';
     }
   });
 
